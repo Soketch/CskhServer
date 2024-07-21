@@ -1,0 +1,72 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "build": "rimraf dist && tsc -P ./tsconfig.prod.json || true",
+    "cz": "cz",
+    "copy": "ts-node ./deploy/handleGiteeJenkins.mjs",
+    "start": "cross-env NODE_ENV=development NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=development NODE_APP_RELEASE_PROJECT_PORT=4300 nodemon --exec node -r @swc-node/register ./src/index.ts",
+    "dev:beta": "cross-env NODE_ENV=development NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=beta NODE_APP_RELEASE_PROJECT_PORT=4300 nodemon --exec node -r @swc-node/register ./src/index.ts",
+    "dev:prod": "cross-env NODE_ENV=development NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=prod NODE_APP_RELEASE_PROJECT_PORT=4200 nodemon --exec node -r @swc-node/register ./src/index.ts",
+    "docker:dev": "cross-env NODE_ENV=development NODE_APP_RELEASE_PROJECT_ALIAS=src NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=development NODE_APP_RELEASE_PROJECT_PORT=4300 nodemon --exec node -r @swc-node/register ./src/init/docker.ts",
+    "docker:prod": "cross-env NODE_ENV=production NODE_APP_RELEASE_PROJECT_ALIAS=src NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=prod NODE_APP_RELEASE_PROJECT_PORT=4200 nodemon --exec node -r @swc-node/register ./src/init/docker.ts",
+    "lint": "eslint --config ./.eslintrc.js . --ext .js,.ts --cache",
+    "lint:fix": "eslint --config ./.eslintrc.js . --ext .js,.ts --cache --fix",
+    "prettier": "prettier --write .",
+    "push": "cz && standard-version",
+    "release": "standard-version",
+    "release:first": "standard-version --first-release",
+    "start:beta": "cross-env NODE_ENV=production NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=beta NODE_APP_RELEASE_PROJECT_PORT=4300 nodemon ./dist/index.js",
+    "start:prod": "cross-env NODE_ENV=production NODE_APP_RELEASE_PROJECT_NAME=server NODE_APP_RELEASE_PROJECT_ENV=prod NODE_APP_RELEASE_PROJECT_PORT=4200 nodemon ./dist/index.js",
+    "typecheck": "tsc -p ./tsconfig.prod.json --noEmit"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "description": "",
+  "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/joi": "^17.2.3",
+    "@types/koa-router": "^7.4.8",
+    "axios": "^1.7.2",
+    "billd-html-webpack-plugin": "^1.0.6",
+    "billd-scss": "^0.0.8",
+    "billd-utils": "^0.0.22",
+    "cross-env": "^7.0.3",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.12",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "koa": "^2.15.3",
+    "koa-body": "^6.0.1",
+    "koa-router": "^12.0.1",
+    "module-alias": "^2.2.3",
+    "mysql2": "^3.10.3",
+    "node-emoji": "^2.1.3",
+    "node-schedule": "^2.1.1",
+    "redis": "^4.6.15",
+    "sequelize": "^6.37.3",
+    "socket.io": "^4.7.5",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@swc-node/register": "^1.10.9",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/koa": "^2.15.0",
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^20.14.10",
+    "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@typescript-eslint/parser": "^7.16.1",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2"
+  }
+}
