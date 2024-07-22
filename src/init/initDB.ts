@@ -233,7 +233,10 @@ export const initDb = async (
             console.log(chalkSUCCESS('校正数据库所有表完成！'));
             break;
         case 'load':
-            require('@/model/relation');
+            console.log(chalkINFO('Load model'));
+            
+            require('../model/relation');
+            
             break;
         default:
             throw new Error('initDb参数不正确！');

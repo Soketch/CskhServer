@@ -3,6 +3,8 @@ import userModel from '@/model/user.model';
 import { Op, literal, where } from 'sequelize';
 import { handlePaging, isPureNumber} from "@/utils";
 import { IList } from "@/interface";
+import roleModel from "@/model/role.model";
+
 class userService {
     
     // 是否存在用户
@@ -18,11 +20,27 @@ class userService {
     }
     
     // 获取用户信息(通过用户id)
-    async getUser(id: number){
+    /** 获取用户信息 */
+    async getUserInfo(id: number) {
+        const result = await userModel.findOne({
+            include: [
+                {
+                    model: roleModel,
+                    through: { attributes: [] },
+                },
+            ],
+            attributes: {
+                exclude: ['password', 'token'],
+                include: [
+                ],
+            },
+            where: { id },
+        });
+        return result;
     }
 
     // 获取用户信息(通过用户名)
-    async getUserNames(ids: number[]){
+    async getUserInfoByName(ids: number[]){
 
     }
 
@@ -122,13 +140,34 @@ class userService {
     }
     
     
-    // 更新用户信息
-    async updateUser(user: IUser): Promise<IUser> {
-        return {} as IUser;
+    /** 根据id修改用户 */
+    async update({ id, username, desc, status, avatar, token }: IUser) {
+        const result = await userModel.update(
+            { username, desc, status, avatar, token },
+            { where: { id } }
+        );
+        return result;
     }
     
     // 删除用户
     async deleteUser(id: number): Promise<void> {
+    }
+
+    /** 根据id查找用户（包括其他账号信息） */
+    async findAccount(id: number) {
+        const result = await userModel.findOne({
+            include: [
+                {
+                    model: roleModel,
+                    through: { attributes: [] },
+                },
+            ],
+            attributes: {
+                exclude: ['password', 'token'],
+            },
+            where: { id },
+        });
+        return result;
     }
 
     // 通过用户名获取用户信息
@@ -156,18 +195,22 @@ class userService {
         return [];
     }
 
-    // 根据id查找用户密码
-    async findUserPasswordById(id: number): Promise<string | undefined> {
-        return undefined;
+
+    /** 根据id查找用户密码 */
+    async findPwd(id: number) {
+        const result = await userModel.findOne({
+            where: { id },
+            attributes: ['password'],
+        });
+        return result;
     }
 
-    //根据id修改用户密码
-    async updateUserPasswordById(id: number, password: string): Promise<void> {
-    }
 
-    // 根据id查找用户角色
-    async findUserRoleById(id: number): Promise<string | undefined> {
-        return undefined;
+
+    /** 根据id修改用户密码 */
+    async updatePwd({ id, password }: IUser) {
+        const result = await userModel.update({ password }, { where: { id } });
+        return result;
     }
 
 

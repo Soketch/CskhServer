@@ -14,17 +14,27 @@ import {
 async function main() {
     try {
         await Promise.all([
-            // connectMysql(), // 连接mysql
-            //connectRedis(), // 连接redis
-            //createRedisPubSub(), // 创建redis的发布订阅
+            connectMysql(), // 连接mysql
+            // connectRedis(), // 连接redis
+            // createRedisPubSub(), // 创建redis的发布订阅
         ]);
         await(
             await import('./controller/init.controller')
         ).default.common.initDefault();  //初始化控制器
         await (await import('./setup')).startServer();
+        console.log(
+            chalkSUCCESS(
+                `Server start successfully, visit http://${getIpAddress()}:3000 to access.`
+            )
+        );
+        
     }
     catch (error) {
-        console.log("server start failed");
+        console.log(
+            chalkERROR(
+                `Server start failed, please check the error message below.`
+            )
+        );
         
         console.error(error);
     }

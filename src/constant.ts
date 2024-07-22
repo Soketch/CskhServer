@@ -38,7 +38,7 @@ export const COMMON_ERROE_MSG = {
     banIp: '此ip已被禁用，请联系管理员处理！', // 此ip已被禁用，请联系管理员处理！
     jwtExpired: '登录信息过期！', // 登录信息过期！
     invalidToken: '非法token！', // 非法token！
-    adminDisableUser: '你的账号已被管理员禁用，请联系管理员处理！', // 你的账号已被管理员禁用，请联系管理员处理！
+    adminDisableUser: '你的账号存在异常', // 你的账号已被管理员禁用，请联系管理员处理！ //
     shutdown: '停机维护中', // 停机维护中
 
     noLogin: '未登录', // 未登录
@@ -67,7 +67,7 @@ export const COMMON_ERR_MSG = {
     banIp: '此ip已被禁用，请联系管理员处理！',
     jwtExpired: '登录信息过期！',
     invalidToken: '非法token！',
-    adminDisableUser: '你的账号已被管理员禁用，请联系管理员处理！',
+    adminDisableUser: '你的账号存在异常！', // 你的账号已被管理员禁用，请联系管理员处理！
     shutdown: '停机维护中~',
 };
 

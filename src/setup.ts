@@ -2,7 +2,7 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 import { CustomError } from '@/model/customError.model';
 import { loadAllRoutes } from '@/router';
-// import { connectWebSocket } from '@/config/websocket';
+import { connectWebSocket } from '@/config/websocket';
 import { COMMON_HTTP_CODE, STATIC_DIR, UPLOAD_DIR } from '@/constant';
 
 
@@ -39,16 +39,12 @@ export async function startServer() {
 
     loadAllRoutes(app); // 加载所有路由
 
-    app.use(async (ctx) => {
-        ctx.body = 'Hello, Koa with TypeScript!';
-    });
-
     await new Promise((resolve) => {
         // 语法糖, 等同于http.createServer(app.callback()).listen(3000);
         const httpServer = app.listen(3000, () => {
             resolve('ok');
         });
-        //connectWebSocket(httpServer); // 初始化websocket
+        connectWebSocket(httpServer); // 初始化websocket
     }); // http接口服务
 
 

@@ -178,16 +178,136 @@ class UserController {
     await next();
   };
 
-
-
-
-
-
-
-
-
-
  
+  async find(ctx: ParameterizedContext, next) {
+    const id = +ctx.params.id;
+    const result = await userService.findAccount(id);
+    successHandler({ ctx, data: result });
+
+    await next();
+  }
+
+  // 获取用户信息
+  async getUserInfo(ctx: ParameterizedContext, next: any) {
+    const { code, userInfo, message } = await authJwt(ctx);
+    if (code !== COMMON_HTTP_CODE.success || !userInfo) {
+      throw new CustomError(message, code, code);
+    }
+    const [auths, result] = await Promise.all([
+      authController.common.getUserAuth(userInfo.id!),
+      userService.getUserInfo(userInfo.id!),
+    ]);
+    // 获取纯净的对象，避免循环引用
+    successHandler({ ctx, data: { ...result?.get({ plain: true }), auths } });
+    await next();
+  }
+
+  // 修改用户密码
+  async updatePwd(ctx: ParameterizedContext, next) {
+    const { code, userInfo, message } = await authJwt(ctx);
+    if (code !== COMMON_HTTP_CODE.success || !userInfo) {
+      throw new CustomError(message, code, code);
+    }
+    const { oldpwd, newpwd } = ctx.request.body;
+    if (!oldpwd || !newpwd) {
+      throw new CustomError(
+        `oldpwd和newpwd不能为空！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    const user = await userService.findPwd(userInfo.id!);
+    if (user?.password !== oldpwd) {
+      throw new CustomError(
+        `旧密码错误！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    await userService.updatePwd({
+      id: userInfo.id,
+      password: newpwd,
+    });
+    successHandler({ ctx, message: '修改密码成功！' });
+    await next();
+  }
+
+  update = async (ctx: ParameterizedContext, next) => {
+    const id = ctx.params.id;
+    const { username, desc, status, avatar }: IUser = ctx.request.body;
+    if (!username) {
+      throw new CustomError(
+        'username不能为空！',
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    const isExist = await userService.isExist([id]);
+    if (!isExist) {
+      throw new CustomError(
+        `不存在id为${id}的用户！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    const isExistSameName = await userService.isSameName(username);
+    if (isExistSameName && isExistSameName.id !== id) {
+      throw new CustomError(
+        `已存在用户名为${username}的用户！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    await userService.update({
+      id,
+      username,
+      desc,
+      status,
+      avatar,
+    });
+    successHandler({ ctx });
+
+    await next();
+  };
+
+  async updateUserRole(ctx: ParameterizedContext, next) {
+    const user_id = ctx.params.id;
+    const { user_roles }: IUser = ctx.request.body;
+
+    if (!user_roles || !user_roles.length) {
+      throw new CustomError(
+        'user_roles要求number[]！',
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+
+    const isExistUser = await userService.isExist([user_id]);
+    if (!isExistUser) {
+      throw new CustomError(
+        `不存在id为${user_id}的用户！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    const ids = arrayUnique(user_roles);
+    const isExistRole = await roleService.isExist(ids);
+    if (!isExistRole) {
+      throw new CustomError(
+        `${ids.toString()}中存在不存在的角色！`,
+        COMMON_HTTP_CODE.paramsError,
+        COMMON_HTTP_CODE.paramsError
+      );
+    }
+    const result = await roleService.updateUserRole({
+      user_id,
+      role_ids: user_roles,
+    });
+    successHandler({ ctx, data: result });
+
+    await next();
+  }
+
 
   delete(ctx: ParameterizedContext, next: any) {
     successHandler({ ctx, message: '敬请期待' });

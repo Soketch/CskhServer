@@ -31,7 +31,7 @@ const model = sequelize.define<UserModel>(
         },
         useremail:{
             type: DataTypes.STRING(50),
-            allowNull: false,
+            allowNull: true,
         },
         password: {
             type: DataTypes.STRING(50),
